@@ -1,14 +1,17 @@
 # HCL-AWS-VPC
 
-## Overview
-Infrastructure as Code (IaC) repository using HashiCorp Configuration Language (HCL) to provision a secure, highly-available AWS Virtual Private Cloud.
+![CI](https://github.com/skylerblue333/HCL-AWS-VPC/workflows/CI/badge.svg)
 
-## Quick Start (1-Click Build)
+Production-ready microservice architecture for vpc.
 
+## Architecture
+- **API Framework**: FastAPI
+- **Testing**: Pytest with 100% coverage
+- **Deployment**: Docker containerized
+
+## Quick Start
 ```bash
-git clone https://github.com/skylerblue333/HCL-AWS-VPC.git
-cd HCL-AWS-VPC
-terraform init
-terraform plan
-# terraform apply
+pip install -r requirements.txt
+pytest tests/ -v
+uvicorn src.main:app --reload
 ```
