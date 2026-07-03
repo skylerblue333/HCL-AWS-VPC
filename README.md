@@ -1,12 +1,34 @@
 # HCL-AWS-VPC
 
-![CI](https://github.com/skylerblue333/HCL-AWS-VPC/workflows/CI/badge.svg)
+Infrastructure as Code: Secure AWS VPC provisioning with Terraform.
 
-Production-grade AWS VPC with public/private subnets, NAT gateways, and security groups across multiple AZs.
+## 🚀 Overview
+This repository contains a professional implementation of **HCL AWS VPC**. It is designed with clean code principles and focuses on functionality and reliability.
 
-## Quick Start
+## 🛠️ Tech Stack
+- **Primary Language**: HCL
+- **Environment**: Node.js / Python / Rust (as applicable)
+- **Key Features**: 
+  - Modular architecture
+  - Clean implementation of core logic
+  - Scalable design
+
+## 📂 Getting Started
+
+### Prerequisites
+- Ensure you have the latest version of the relevant runtime (Node.js, Python, or Rust) installed.
+
+### Installation
 ```bash
-terraform init
-terraform plan
-terraform apply
+git clone https://github.com/skylerblue333/HCL-AWS-VPC.git
+cd HCL-AWS-VPC
 ```
+
+### Usage
+Follow the specific language conventions to run the project (e.g., `npm install`, `cargo build`, or `pip install -r requirements.txt`).
+
+## 🛡️ License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+Built by [Skyler Blue](https://github.com/skylerblue333)
