@@ -1,44 +1,55 @@
-<!-- PORTFOLIO PROJECT PROFILE: maintained by the repository owner -->
+# Sky VPC Terraform Module
 
-## Project profile and code-audit snapshot
+**Status: engineering beta.** This repository defines a focused AWS VPC network baseline with Terraform. It is not evidence that any AWS environment has been deployed.
 
-**What this is:** **HCL-AWS-VPC** is a public repository described as: “Infrastructure as Code: Secure AWS VPC provisioning with Terraform. #SkyCoin4444 #AI #Blockchain #DevOps #Innovation” Its dominant language signals are **Terraform (3 files)**.
+## What it creates
 
-**Why it has value:** Its value is best understood through the implementation evidence currently present in the repository: **15 tracked files** were observed in the shallow audit, with the source structure and existing documentation providing the project’s specific context. This README does not treat a prototype, experiment, or archive as a production system without supporting evidence.
+- One VPC with DNS support and hostnames enabled.
+- One public and one private subnet per configured Availability Zone.
+- An Internet Gateway and shared public route table.
+- One NAT Gateway and private route table per Availability Zone, with each private subnet routed through the NAT Gateway in the same zone.
+- A web-tier security group with HTTPS ingress and optional HTTP ingress.
+- Consistent project/environment Terraform tags.
 
-**Implementation evidence:** No test-related file was detected by filename heuristics.; 1 dependency or package manifest(s) detected; 1 build/CI/infrastructure signal(s) detected; and 3 documentation or governance file(s) detected. Test filenames observed include none detected. Dependency or package files include `package.json`. Build, CI, or infrastructure signals include `.github/workflows/ci.yml`.
+## Safety defaults
 
-**Current status:** The repository is tracked on the `main` branch. The existing source tree, configuration, tests, workflows, and documentation remain authoritative for supported behavior and maturity. A code audit is not a production-readiness certification, and the presence of a test or workflow file does not establish that all checks pass.
+HTTP ingress is disabled by default. HTTPS ingress defaults to `0.0.0.0/0` for a public web-tier use case; production consumers should narrow `web_ingress_cidrs` whenever possible. Private subnets do not assign public IPv4 addresses. Terraform variables validate region shape, project names, environment values, CIDRs, and Availability Zone cardinality.
 
-**Relationship to the wider portfolio:** This repository is one focused component of the broader Skyler Blue Spillers portfolio across AI, software engineering, cloud and DevOps, cybersecurity, blockchain, finance, education, social systems, and creative work. It may provide a service boundary, implementation pattern, experiment, archive, or reusable idea for related repositories. Treat repositories as technical dependencies only where documented interfaces and verified project requirements support that relationship.
+## Verify locally
 
-**Quality and security note:** No obvious secret-like pattern was detected by the limited static scan; this is not a substitute for a security audit. No TODO/FIXME marker was detected in the scanned text files.
+```bash
+terraform fmt -check -recursive
+terraform init -backend=false -input=false
+terraform validate
+terraform providers lock -platform=linux_amd64
+```
 
----
+GitHub Actions also runs a HIGH/CRITICAL infrastructure configuration scan. CI validation does not contact AWS and does not prove IAM permissions, quotas, route behavior in a live account, cost controls, or deployment success.
 
-# Hcl Aws Vpc
+## Example
 
-![GitHub stars](https://img.shields.io/github/stars/skylerblue333/HCL-AWS-VPC?style=flat-square)
-![GitHub license](https://img.shields.io/github/license/skylerblue333/HCL-AWS-VPC?style=flat-square)
+```hcl
+module "network" {
+  source = "./"
 
-## 🌟 Overview
-**HCL-AWS-VPC** is a professional-grade project within the **SkyCoin4444** ecosystem. It focuses on delivering high-value solutions in the domain of **Software Development**.
+  region             = "us-east-1"
+  project_name       = "skycoin4444"
+  environment        = "staging"
+  vpc_cidr           = "10.44.0.0/16"
+  availability_zones = ["us-east-1a", "us-east-1b"]
+  web_ingress_cidrs  = ["203.0.113.0/24"]
+  enable_http_ingress = false
+}
+```
 
-## 🚀 Key Features
-- **Scalable Architecture**: Designed for enterprise-level growth and performance.
-- **Modern Standards**: Implements best practices for clean code and maintainability.
-- **Robust Integration**: Built to work seamlessly within modern cloud-native environments.
+## Architecture boundary
 
-## 🛠️ Technology Stack
-- **Primary Domain**: Software Development
-- **Ecosystem**: SkyCoin4444 Digital Platform
+This module intentionally stops at the network foundation. It does not create EKS/ECS/EC2 workloads, databases, load balancers, WAF, Route 53, ACM certificates, Transit Gateway, VPC endpoints, flow-log storage, VPN/Direct Connect, or centralized egress. Those should be separate composable modules with their own evidence and security boundaries.
 
-## 📂 Structure
-The project is organized into a modular structure to ensure clarity and ease of development.
+The default design uses one NAT Gateway per Availability Zone to avoid routing private-subnet egress through another zone. NAT Gateways incur AWS charges; consumers should evaluate the cost/availability tradeoff for their environment.
 
-## 👨‍💻 Author
-**Skyler Blue Spillers**
-*Professional Chess Player & Software Engineer*
+## SKYCOIN4444 integration
 
----
-*Powered by SkyCoin4444*
+The outputs expose VPC, subnet, route-table, NAT Gateway, and web security-group identifiers so independently deployed SKYCOIN4444 services can consume the network through Terraform module composition instead of copied infrastructure definitions.
+
+See `SECURITY.md` for deployment assumptions and limitations.
