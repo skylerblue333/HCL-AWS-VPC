@@ -134,7 +134,7 @@ resource "aws_route_table_association" "private" {
 
 resource "aws_security_group" "web" {
   name        = "${var.project_name}-web-sg"
-  description = "Web-tier ingress and egress policy"
+  description = "Web tier security group"
   vpc_id      = aws_vpc.main.id
 
   ingress {
