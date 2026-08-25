@@ -1,11 +1,33 @@
-name: CI
-on: [push, pull_request]
+name: terraform-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
-      - run: terraform init -backend=false
-      - run: terraform validate
-      - run: terraform fmt -check
+        with:
+          terraform_version: 1.11.4
+      - name: Format
+        run: terraform fmt -check -recursive
+      - name: Initialize without backend
+        run: terraform init -backend=false -input=false
+      - name: Validate
+        run: terraform validate -no-color
+      - name: Provider lock verification
+        run: terraform providers lock -platform=linux_amd64
+      - name: Security scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          hide-progress: true
